@@ -9,16 +9,22 @@ contract Ownable {
     /** @dev Constructor: instantiates onwership for derived contracts */
     function Ownable() public {owner = msg.sender;}
 
+    // checks whether the sender is the owner of the contract. If not, the action is reversed and no gas is consumed.
+    modifier onlyOwner() {
+        require(owner == msg.sender);
+        _;
+    }
+
     /** @dev passes the ownership of the current contract to another address. Only the current owner can call this function.
         @param _newOwner The address of the new owner. 
         */
-    function passOwnership(address _newOwner) internal { 
+    function passOwnership(address _newOwner) internal onlyOwner { 
         require(_newOwner != 0x0);
         owner = _newOwner; 
     }
 
     /** @dev deactivates the current contract and returns all remaining ethers to the owner's address. Only the current owner can call this function. */
-    function kill() internal {selfdestruct(owner);}
+    function kill() internal onlyOwner {selfdestruct(owner);}
 
     /** @dev retrieves the address of the current owner.
         @return The address of the current owner. 
